@@ -46,8 +46,9 @@ Cookbook này được thiết kế linh hoạt với **2 chế độ vận hàn
 
 ```text
 cook-book/
-├── README.md                          # Hướng dẫn tổng quan, cài đặt & tích hợp đa nền tảng
-├── install.sh                         # Script cài đặt & liên kết tự động một chạm
+├── README.md                          # Hướng dẫn tổng quan, cài đặt (Windows & Linux) & tích hợp
+├── install.sh                         # Script cài đặt & liên kết tự động cho Linux / macOS
+├── install.ps1                        # Script cài đặt & liên kết tự động cho Windows (PowerShell)
 ├── rules/                             # Các quy tắc cốt lõi (Core Rules)
 │   ├── 01-module-creation-rules.md    # [Track 1] Quy tắc tạo module phần mềm (kèm Bước 0 làm rõ điểm xám)
 │   ├── 02-architecture-standards.md   # [Track 1] Tiêu chuẩn kiến trúc (Business Clarity First, SOLID)
@@ -91,65 +92,102 @@ cook-book/
 
 ## 📥 Hướng Dẫn Cài Đặt (Installation & Setup)
 
-### Cách 1: Cài đặt tự động qua Script (Khuyến nghị)
-Chỉ cần chạy file `install.sh` ngay trong thư mục repository:
+### 🪟 DÀNH CHO WINDOWS
 
-```bash
-cd /path/to/cook-book
-bash install.sh
+#### Cách 1: Tự động qua PowerShell Script (Khuyến nghị)
+Mở **PowerShell** (hoặc Windows Terminal) tại thư mục `cook-book` và chạy:
+
+```powershell
+# Chạy script cài đặt tương tác
+powershell -ExecutionPolicy Bypass -File .\install.ps1
 ```
 
-Menu tương tác sẽ hiển thị để bạn chọn công cụ mong muốn:
-* `1` - Tích hợp cho **Google Antigravity** (tự động tạo symlink skills vào `~/.gemini/antigravity/skills/` và tạo `GEMINI.md`).
+Script sẽ hiển thị menu tương tác để bạn chọn tích hợp:
+* `1` - Tích hợp cho **Google Antigravity** (tự động link/copy skills vào `%USERPROFILE%\.gemini\antigravity\skills\` và tạo `GEMINI.md`).
 * `2` - Tích hợp cho **Anthropic Claude Code** (tạo `CLAUDE.md`).
-* `3` - Tích hợp cho **OpenAI Codex / Copilot / Cursor** (tạo `AGENTS.md`, `.cursorrules` và `.github/copilot-instructions.md`).
-* `4` - Tích hợp **TẤT CẢ** các công cụ trên vào dự án hiện tại.
+* `3` - Tích hợp cho **OpenAI Codex / Copilot / Cursor** (tạo `AGENTS.md`, `.cursorrules`, `.github\copilot-instructions.md`).
+* `4` - Tích hợp **TẤT CẢ** các AI Assistant cho dự án.
 
-Bạn cũng có thể chỉ định dự án đích trực tiếp bằng dòng lệnh:
-```bash
-# Cài đặt cho một dự án cụ thể ở thư mục khác:
-bash install.sh /home/username/code/my-new-project --all
-```
+> **Mẹo**: Bạn có thể cài đặt trực tiếp cho dự án khác mà không cần vào menu:
+> ```powershell
+> powershell -ExecutionPolicy Bypass -File .\install.ps1 -TargetProject "C:\Users\username\code\my-project" -Tool all
+> ```
+
+#### Cách 2: Cài đặt thủ công trên Windows (PowerShell / Command Prompt)
+
+1. **Cho Google Antigravity on Windows**:
+   * Tạo thư mục skills nếu chưa có:
+     ```powershell
+     New-Item -ItemType Directory -Path "$env:USERPROFILE\.gemini\antigravity\skills" -Force
+     ```
+   * Copy toàn bộ thư mục skills:
+     ```powershell
+     Copy-Item -Path ".\skills\*" -Destination "$env:USERPROFILE\.gemini\antigravity\skills" -Recurse -Force
+     ```
+   * Sao chép file quy tắc dự án:
+     ```powershell
+     Copy-Item -Path ".\configs\GEMINI.sample.md" -Destination "C:\path\to\my-project\GEMINI.md"
+     ```
+
+2. **Cho Anthropic Claude Code on Windows**:
+   * Cài đặt cho dự án hiện tại:
+     ```powershell
+     Copy-Item -Path ".\configs\CLAUDE.sample.md" -Destination "C:\path\to\my-project\CLAUDE.md"
+     ```
+   * Hoặc cấu hình bộ nhớ toàn cục (Global Memory):
+     ```powershell
+     New-Item -ItemType Directory -Path "$env:USERPROFILE\.claude" -Force
+     Copy-Item -Path ".\configs\CLAUDE.sample.md" -Destination "$env:USERPROFILE\.claude\CLAUDE.md"
+     ```
+
+3. **Cho OpenAI Codex / GitHub Copilot / Cursor on Windows**:
+   * **Cursor**: `Copy-Item -Path ".\configs\AGENTS.sample.md" -Destination "C:\path\to\my-project\.cursorrules"`
+   * **Copilot**:
+     ```powershell
+     New-Item -ItemType Directory -Path "C:\path\to\my-project\.github" -Force
+     Copy-Item -Path ".\configs\AGENTS.sample.md" -Destination "C:\path\to\my-project\.github\copilot-instructions.md"
+     ```
+
+4. **Nếu bạn sử dụng WSL2 (Windows Subsystem for Linux)**:
+   Mở terminal Ubuntu/WSL và thực hiện như hướng dẫn Linux bên dưới.
 
 ---
 
-### Cách 2: Cài đặt thủ công từng bước
+### 🐧 DÀNH CHO LINUX & MACOS
 
-#### 1. Dành cho Google Antigravity (AGY):
-* **Liên kết Skills**:
+#### Cách 1: Tự động qua Bash Script (Khuyến nghị)
+```bash
+cd /path/to/cook-book
+chmod +x install.sh
+bash install.sh
+```
+
+Menu tương tác sẽ hiển thị để bạn chọn công cụ:
+* `1` - Google Antigravity (AGY)
+* `2` - Anthropic Claude Code
+* `3` - OpenAI Codex / Copilot / Cursor
+* `4` - Cài đặt tất cả (All Assistants)
+
+Hoặc truyền đối số trực tiếp:
+```bash
+bash install.sh /home/username/code/my-project --all
+```
+
+#### Cách 2: Cài đặt thủ công trên Linux / macOS
+* **Google Antigravity**:
   ```bash
   mkdir -p ~/.gemini/antigravity/skills
   ln -sfn /path/to/cook-book/skills/* ~/.gemini/antigravity/skills/
-  ```
-* **Cấu hình Quy tắc Dự án**: Copy file mẫu `configs/GEMINI.sample.md` vào thư mục gốc của dự án bạn đang làm và đổi tên thành `GEMINI.md`:
-  ```bash
   cp /path/to/cook-book/configs/GEMINI.sample.md /path/to/my-project/GEMINI.md
   ```
-
-#### 2. Dành cho Anthropic Claude Code (`claude`):
-* Copy file `configs/CLAUDE.sample.md` vào thư mục dự án với tên `CLAUDE.md`:
+* **Claude Code**:
   ```bash
   cp /path/to/cook-book/configs/CLAUDE.sample.md /path/to/my-project/CLAUDE.md
   ```
-* Hoặc cài đặt toàn cục (Global Memory) cho mọi dự án:
-  ```bash
-  mkdir -p ~/.claude
-  cp /path/to/cook-book/configs/CLAUDE.sample.md ~/.claude/CLAUDE.md
-  ```
-
-#### 3. Dành cho OpenAI Codex / GitHub Copilot / Cursor:
-* **Cursor IDE**: Copy `configs/AGENTS.sample.md` vào `.cursorrules` hoặc `.cursor/rules/cookbook.mdc`:
-  ```bash
-  cp /path/to/cook-book/configs/AGENTS.sample.md /path/to/my-project/.cursorrules
-  ```
-* **GitHub Copilot Workspace**:
-  ```bash
-  mkdir -p /path/to/my-project/.github
-  cp /path/to/cook-book/configs/AGENTS.sample.md /path/to/my-project/.github/copilot-instructions.md
-  ```
-* **OpenAI Codex / CLI Agents chuẩn mở**:
+* **Codex / Cursor / Copilot**:
   ```bash
   cp /path/to/cook-book/configs/AGENTS.sample.md /path/to/my-project/AGENTS.md
+  cp /path/to/cook-book/configs/AGENTS.sample.md /path/to/my-project/.cursorrules
   ```
 
 ---
