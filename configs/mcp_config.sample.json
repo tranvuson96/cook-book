@@ -1,0 +1,21 @@
+{
+  "mcpServers": {
+    "database-inspector": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "@modelcontextprotocol/server-postgres",
+        "postgresql://user:password@localhost:5432/my_database"
+      ],
+      "description": "Kết nối trực tiếp tới cơ sở dữ liệu để truy vấn schema và dữ liệu phục vụ phân tích thiết kế"
+    },
+    "git-tools": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "@modelcontextprotocol/server-git"
+      ],
+      "description": "Hỗ trợ các thao tác kiểm tra branch, diff và git history nâng cao"
+    }
+  }
+}

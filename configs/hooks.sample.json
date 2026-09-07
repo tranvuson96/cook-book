@@ -1,0 +1,23 @@
+{
+  "description": "Cấu hình hooks tự động kiểm tra code quality và an toàn",
+  "hooks": {
+    "pre_tool_execution": [
+      {
+        "matcher": "run_command",
+        "description": "Cảnh báo khi chạy lệnh nguy hiểm xóa dữ liệu",
+        "deny_patterns": [
+          "rm -rf /",
+          "rm -rf ~",
+          "drop database",
+          "drop table"
+        ]
+      }
+    ],
+    "post_edit_execution": [
+      {
+        "description": "Chạy linter tự động sau khi sửa file mã nguồn",
+        "command": "npm run lint --fix || true"
+      }
+    ]
+  }
+}
