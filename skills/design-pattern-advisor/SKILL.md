@@ -32,3 +32,15 @@ Khi đứng trước một bài toán kỹ thuật cần giải quyết bằng m
 | Cần tích hợp với SDK / Thư viện bên thứ 3 có interface không tương thích | **Adapter Pattern** | Đóng vai trò lớp chuyển đổi trung gian, giữ nguyên domain code. |
 | Cần thông báo cho nhiều module khi có sự thay đổi trạng thái (Sự kiện Đặt hàng thành công) | **Observer / Pub-Sub Pattern** | Loose-coupling giữa nhà phát hành sự kiện (Publisher) và người lắng nghe (Subscriber). |
 | Bổ sung hành vi (Logging, Caching, Rate Limiting, Audit) vào đối tượng mà không sửa class gốc | **Decorator Pattern** | Bọc đối tượng gốc bằng các wrapper layer linh hoạt. |
+
+---
+
+## 3. Kho Ví Dụ Ca Sử Dụng Thực Tế Theo Từng Ngôn Ngữ (Cases by Language)
+
+Truy cập thư viện chi tiết chứa các bài toán thực chiến và code triển khai trên **PHP**, **TypeScript**, **Go** và **Python**:
+
+* 🏭 **[Nhóm Khởi Tạo (Creational Cases)](../../patterns/01-creational-cases.md)**: Factory Method (Cổng thanh toán đa kênh), Builder / Functional Options (Cấu hình báo cáo phức tạp).
+* 🧱 **[Nhóm Cấu Trúc (Structural Cases)](../../patterns/02-structural-cases.md)**: Adapter (Chuẩn hóa SMS SDK), Decorator (Transparent Redis Cache & Audit Log), Facade (Quy trình Checkout toàn diện).
+* 🔄 **[Nhóm Hành Vi (Behavioral Cases)](../../patterns/03-behavioral-cases.md)**: Strategy (Tính phí vận chuyển GHTK/GHN/Grab), Chain of Responsibility (Kiểm duyệt chống gian lận đa tầng), State (Vòng đời đơn hàng chống nhảy cóc), Observer (Event Dispatcher song song).
+* 💡 **[Đặc thù Ngôn ngữ (Language Idioms)](../../patterns/04-language-idioms.md)**: Cách viết pattern chuẩn bản sắc riêng của từng ngôn ngữ (Functional Options trong Go, Match Expression trong PHP 8, First-class Functions trong TS, Protocols trong Python).
+

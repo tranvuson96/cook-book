@@ -69,6 +69,13 @@ cook-book/
 │       ├── 04-site-audit-and-qa-template.md      # Checklist kiểm thử giao diện, chức năng, tốc độ
 │       └── 05-handover-and-finalize-template.md  # Biên bản bàn giao & dọn dẹp hệ thống
 │
+├── patterns/                          # Thư viện Mẫu Thiết Kế Thực Chiến Theo Ngôn Ngữ
+│   ├── README.md                      # Ma trận tra cứu nhanh bài toán nghiệp vụ & pattern
+│   ├── 01-creational-cases.md         # Factory Method, Builder, Singleton (PHP, TS, Go, Python)
+│   ├── 02-structural-cases.md         # Adapter, Decorator, Facade, Composite (PHP, TS, Go, Python)
+│   ├── 03-behavioral-cases.md         # Strategy, Observer, State, Chain of Resp (PHP, TS, Go, Python)
+│   └── 04-language-idioms.md          # Đặc thù triển khai chuẩn theo triết lý từng ngôn ngữ
+│
 ├── skills/                            # Thư viện Skills chuyên biệt (Progressive Disclosure)
 │   ├── module-creation/               # [Track 1] Quy trình tự động hoá tạo module code
 │   ├── design-pattern-advisor/        # [Track 1] Tư vấn, so sánh ưu/nhược điểm Design Patterns
