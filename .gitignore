@@ -12,3 +12,10 @@ Thumbs.db
 # Node & Logs
 node_modules/
 *.log
+
+# Generated Assistant Configs
+/GEMINI.md
+/CLAUDE.md
+/AGENTS.md
+/.cursorrules
+/.github/copilot-instructions.md

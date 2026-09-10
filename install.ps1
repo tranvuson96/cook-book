@@ -21,23 +21,45 @@ Write-Host "========================================================" -Foregroun
 
 function Setup-Antigravity {
     Write-Host "`n⚙️ Đang cấu hình cho Google Antigravity (Windows)..." -ForegroundColor Yellow
-    $GeminiSkillsDir = Join-Path $env:USERPROFILE ".gemini\antigravity\skills"
-    if (-not (Test-Path $GeminiSkillsDir)) {
-        New-Item -ItemType Directory -Path $GeminiSkillsDir -Force | Out-Null
-    }
+    
+    $TargetSkillDirs = @(
+        (Join-Path $env:USERPROFILE ".gemini\config\skills"),
+        (Join-Path $env:USERPROFILE ".gemini\antigravity\skills")
+    )
 
     $SkillsPath = Join-Path $ScriptDir "skills"
-    Get-ChildItem -Path $SkillsPath -Directory | ForEach-Object {
-        $dest = Join-Path $GeminiSkillsDir $_.Name
-        try {
-            # Thử tạo Symlink trước (cần Developer Mode hoặc Run as Admin)
-            New-Item -ItemType SymbolicLink -Path $dest -Target $_.FullName -Force -ErrorAction Stop | Out-Null
-            Write-Host "   ✅ Linked skill (Symlink): $($_.Name)" -ForegroundColor Green
-        } catch {
-            # Fallback sang copy nếu không có quyền Symlink trên Windows
-            Copy-Item -Path $_.FullName -Destination $dest -Recurse -Force
-            Write-Host "   ✅ Copied skill: $($_.Name)" -ForegroundColor Green
+
+    foreach ($SkillDir in $TargetSkillDirs) {
+        if (-not (Test-Path $SkillDir)) {
+            New-Item -ItemType Directory -Path $SkillDir -Force | Out-Null
         }
+        Get-ChildItem -Path $SkillsPath -Directory | ForEach-Object {
+            $dest = Join-Path $SkillDir $_.Name
+            try {
+                # Thử tạo Symlink trước (cần Developer Mode hoặc Run as Admin)
+                New-Item -ItemType SymbolicLink -Path $dest -Target $_.FullName -Force -ErrorAction Stop | Out-Null
+                Write-Host "   ✅ Linked skill (Symlink): $($_.Name) -> $dest" -ForegroundColor Green
+            } catch {
+                # Fallback sang copy nếu không có quyền Symlink trên Windows
+                Copy-Item -Path $_.FullName -Destination $dest -Recurse -Force
+                Write-Host "   ✅ Copied skill: $($_.Name) -> $dest" -ForegroundColor Green
+            }
+        }
+    }
+
+    # Cập nhật Global GEMINI.md & AGENTS.md nếu tồn tại thư mục ~/.gemini/config
+    $GlobalConfigDir = Join-Path $env:USERPROFILE ".gemini\config"
+    if (Test-Path $GlobalConfigDir) {
+        $SampleGemini = Join-Path $ScriptDir "configs\GEMINI.sample.md"
+        $GlobalGemini = Join-Path $GlobalConfigDir "GEMINI.md"
+        $gContent = (Get-Content $SampleGemini -Raw -Encoding UTF8).Replace("[Đường dẫn tới cook-book]", $ScriptDir)
+        Set-Content -Path $GlobalGemini -Value $gContent -Encoding UTF8
+
+        $SampleAgents = Join-Path $ScriptDir "configs\AGENTS.sample.md"
+        $GlobalAgents = Join-Path $GlobalConfigDir "AGENTS.md"
+        $aContent = (Get-Content $SampleAgents -Raw -Encoding UTF8).Replace("[Path to cook-book]", $ScriptDir)
+        Set-Content -Path $GlobalAgents -Value $aContent -Encoding UTF8
+        Write-Host "   ✅ Updated global rules: $GlobalGemini & $GlobalAgents" -ForegroundColor Green
     }
 
     # Tạo GEMINI.md trong thư mục dự án
