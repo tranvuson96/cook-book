@@ -74,7 +74,8 @@ cook-book/
 │   ├── 01-creational-cases.md         # Factory Method, Builder, Singleton (PHP, TS, Go, Python)
 │   ├── 02-structural-cases.md         # Adapter, Decorator, Facade, Composite (PHP, TS, Go, Python)
 │   ├── 03-behavioral-cases.md         # Strategy, Observer, State, Chain of Resp (PHP, TS, Go, Python)
-│   └── 04-language-idioms.md          # Đặc thù triển khai chuẩn theo triết lý từng ngôn ngữ
+│   ├── 04-language-idioms.md          # Đặc thù triển khai chuẩn theo triết lý từng ngôn ngữ
+│   └── 05-helper-and-utility-patterns.md # Singleton, Null Object, Registry, Context Scope, Flyweight
 │
 ├── skills/                            # Thư viện Skills chuyên biệt (Progressive Disclosure)
 │   ├── module-creation/               # [Track 1] Quy trình tự động hoá tạo module code

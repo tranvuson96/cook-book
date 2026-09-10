@@ -16,6 +16,8 @@ Thư mục này tổng hợp các bài toán nghiệp vụ thực tế (Real-Wor
 | **Sự kiện sau thanh toán** (Trừ kho, gửi mail, push socket) | **Observer / Domain Events** | [03-behavioral-cases.md](./03-behavioral-cases.md) | PHP, TS, Go, Python |
 | **Quản lý vòng đời đơn hàng** (Draft -> Paid -> Shipped) | **State Pattern** | [03-behavioral-cases.md](./03-behavioral-cases.md) | PHP, TS, Go, Python |
 | **Tích hợp hệ thống con phức tạp thành 1 điểm gọi** | **Facade Pattern** | [02-structural-cases.md](./02-structural-cases.md) | PHP, TS, Go, Python |
+| **Chia sẻ cấu hình, kết nối & Glue code an toàn** | **Singleton / DI Scope / Registry** | [05-helper-and-utility-patterns.md](./05-helper-and-utility-patterns.md) | PHP, TS, Go, Python |
+| **Khử `null` check & Ngữ cảnh Multi-Tenant ngầm** | **Null Object / Context Scope** | [05-helper-and-utility-patterns.md](./05-helper-and-utility-patterns.md) | PHP, TS, Go, Python |
 
 ---
 
@@ -41,3 +43,7 @@ Thư mục này tổng hợp các bài toán nghiệp vụ thực tế (Real-Wor
      * **TypeScript**: Structural Typing, Generics, First-class Functions, Method Decorators.
      * **Go (Golang)**: Composition over Inheritance, Implicit Interfaces, Functional Options, Goroutines/Channels.
      * **Python (3.10+)**: Protocols (`typing.Protocol`), Closures/Decorators, Dataclasses, Duck Typing.
+5. **[05-helper-and-utility-patterns.md](./05-helper-and-utility-patterns.md)**:
+   * Cẩm nang Helper & Utility Patterns (Singleton, Null Object, Registry, Context Scope, Flyweight).
+   * Phân tích Anti-Pattern vs Best Practice (DI Container with Singleton Scope).
+   * Triển khai chi tiết thread-safe trên PHP, TypeScript, Go và Python.
