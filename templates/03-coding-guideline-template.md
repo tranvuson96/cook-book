@@ -8,53 +8,75 @@
 
 ## 1. Cấu trúc Thư mục Module (Directory Structure)
 
-Quy định cấu trúc thư mục phân tầng rõ ràng cho module:
+Quy định cấu trúc thư mục phân tầng Hexagonal (Ports & Adapters) hỗ trợ Đa Giao thức (Multi-Protocol) & Đa Khách thuê (Multi-Tenancy):
 
 ```text
 src/modules/[module-name]/
-├── domain/                    # Thực thể và logic nghiệp vụ thuần tuý
-│   ├── entities/              # Các Entity (vd: Order, OrderItem)
-│   ├── value-objects/         # Các Value Object (vd: Money, Address)
-│   └── repositories/          # Interface repository (trừu tượng)
-├── application/               # Use cases và điều phối nghiệp vụ
-│   ├── commands/              # Command handler (CreateOrderCommand)
-│   ├── queries/               # Query handler (GetOrderDetailsQuery)
-│   └── dtos/                  # Request / Response Data Transfer Objects
-├── infrastructure/            # Tầng hạ tầng và cài đặt cụ thể
-│   ├── persistence/           # DB schema, ORM entities, Repo implementations
-│   └── external-services/     # Cài đặt kết nối bên ngoài (StripeAdapter,...)
-└── presentation/              # Tầng giao diện / API
-    ├── controllers/           # HTTP REST / GraphQL Controllers
-    └── routes/                # Khai báo Endpoint routes
+├── domain/                         # 1. TẦNG DOMAIN: Nghiệp vụ cốt lõi (100% độc lập)
+│   ├── entities/                   # Các Entity (vd: Order, OrderItem)
+│   ├── value-objects/              # Các Value Object (vd: Money, TenantId, OrderStatus)
+│   ├── exceptions/                 # Custom Domain Exceptions (vd: OutOfStockException)
+│   └── ports/                      # Cổng ra trừu tượng (Outbound Ports)
+│       ├── order-repository.port.ts
+│       └── payment-gateway.port.ts
+│
+├── application/                    # 2. TẦNG APPLICATION: Use Cases & Inbound Ports
+│   ├── use-cases/                  # Các kịch bản nghiệp vụ (CreateOrderUseCase)
+│   ├── dtos/                       # Input & Output DTOs thuần tuý (CreateOrderInput, CreateOrderOutput)
+│   └── ports/                      # Cổng vào (Inbound Ports / Use Case Interfaces)
+│
+├── infrastructure/                 # 3. TẦNG DRIVEN ADAPTERS: Hạ tầng & Bên ngoài
+│   ├── persistence/                # DB Repositories, ORM Mappings, Migrations
+│   │   ├── multi-tenant/           # TenantConnectionManager, TenantQueryFilter
+│   │   └── repositories/           # MySQLOrderRepository (implements OrderRepositoryPort)
+│   ├── external-services/          # Adapters cổng thanh toán, SMS, Mail (VnPayAdapter)
+│   └── cache/                      # RedisCacheAdapter (có tenant prefix tự động)
+│
+└── presentation/                   # 4. TẦNG DRIVING ADAPTERS: Cổng giao tiếp đa giao thức
+    ├── middleware/                 # TenantResolutionMiddleware, AuthMiddleware
+    ├── rest/                       # REST API: Controllers, DTO request/response, Express/FastAPI routes
+    ├── soap/                       # SOAP Service: WSDL definitions, SoapOrderHandler
+    ├── graphql/                    # GraphQL: Schemas, Query & Mutation Resolvers
+    ├── websocket/                  # WebSocket: Event handlers, Socket.io / TCP listeners
+    └── cli/                        # CLI Commands: WP-CLI / Artisan / Terminal commands
 ```
 
 ---
 
 ## 2. Quy chuẩn Đặt tên (Naming Conventions)
 
-* **Files & Thư mục:** `kebab-case` (vd: `order-service.ts`, `create-order-command.go`).
-* **Classes & Interfaces:** `PascalCase` (vd: `OrderService`, `PaymentGatewayInterface`).
-* **Hàm & Phương thức:** `camelCase` (thể hiện rõ hành động: `findOrderById`, `validatePaymentInfo`).
-* **Biến & Thuộc tính:** `camelCase`, mô tả rõ ràng nghĩa, tránh viết tắt tối nghĩa (vd: `isPaymentCompleted`, không dùng `flg`).
-* **Hằng số:** `UPPER_SNAKE_CASE` (vd: `DEFAULT_MAX_RETRY_COUNT`).
+* **Files & Thư mục:** `kebab-case` (vd: `order-service.ts`, `create-order-use-case.ts`, `mysql-order-repository.ts`).
+* **Classes & Interfaces:** `PascalCase` (vd: `CreateOrderUseCase`, `OrderRepositoryPort`, `SoapOrderHandler`).
+* **Hàm & Phương thức:** `camelCase` (thể hiện rõ hành động: `createOrder`, `findOrderById`, `validateStock`).
+* **Biến & Thuộc tính:** `camelCase`, mô tả rõ ràng nghĩa, tránh viết tắt tối nghĩa (vd: `tenantId`, `isPaymentCompleted`, không dùng `flg`).
+* **Hằng số:** `UPPER_SNAKE_CASE` (vd: `DEFAULT_MAX_RETRY_COUNT`, `TENANT_HEADER_KEY`).
 
 ---
 
 ## 3. Các Quy tắc Code cụ thể (Specific Coding Rules)
 
-1. **Dependency Injection:**
-   * Không bao giờ khởi tạo trực tiếp instance bằng từ khoá `new` bên trong Service nghiệp vụ; luôn inject thông qua constructor.
-2. **DTO & Validation:**
-   * Mọi dữ liệu đầu vào từ Controller phải được validate qua DTO / Schema Validator trước khi truyền xuống Application layer.
-3. **Transaction Management:**
-   * Mọi usecase làm thay đổi trạng thái của nhiều bảng phải được điều phối thông qua Unit of Work hoặc Transaction Manager.
-4. **Error Handling & Response Format:**
-   * Chỉ throw Custom Domain Exception (vd: `OrderNotFoundException`, `InsufficientStockException`).
-   * Không để lộ stack trace nội bộ ra client. Trả về response chuẩn dạng JSON:
-     ```json
-     {
-       "success": false,
-       "errorCode": "ORDER_NOT_FOUND",
-       "message": "Không tìm thấy đơn hàng với mã được yêu cầu"
-     }
-     ```
+### A. Quy tắc Tách tầng Nghiệp vụ & Đa Giao thức (Multi-Protocol Rules)
+1. **Zero Protocol Leakage (Không rò rỉ giao thức vào Use Case):**
+   * Use Case và Domain TUYỆT ĐỐI KHÔNG nhận các object của giao thức mạng (`HttpRequest`, `HttpResponse`, `SoapServer`, `GraphQLResolveInfo`, `Socket`).
+   * Tầng Presentation chịu trách nhiệm trích xuất dữ liệu, validate schema đầu vào và đóng gói thành `InputDTO` trước khi gọi `UseCase.execute(input)`.
+2. **Protocol-Specific Error Transformation:**
+   * Tầng Use Case chỉ throw `DomainException`.
+   * Mỗi Adapter tự bắt và format lỗi theo chuẩn của mình:
+     * **REST:** HTTP status code (`400`, `404`, `409`) + JSON payload.
+     * **SOAP:** Ném `SoapFault` với mã fault code và fault string.
+     * **GraphQL:** Ném `GraphQLError` với `extensions.code`.
+     * **WebSocket:** Emit socket error event `{ event: "error", code: "..." }`.
+
+### B. Quy tắc Đa Khách thuê (Multi-Tenancy Rules)
+1. **Tenant Context Immutability:**
+   * Mọi request/job phải được `TenantResolutionMiddleware` nhận diện và gán vào `TenantContext` ngay tại cửa ngõ vào của request.
+   * `TenantContext` trong suốt vòng đời của request là bất biến (Read-only).
+2. **Automatic Data Scoping (Tránh lộ dữ liệu chéo):**
+   * Không bao giờ viết query SQL thủ công mà quên `tenant_id` khi dùng mô hình Shared Database.
+   * Bắt buộc sử dụng ORM Global Filter / Repository Scoping để tự động thêm điều kiện `tenant_id = currentTenantId` cho mọi thao tác đọc/ghi.
+3. **Cache Key Isolation:**
+   * Mọi key lưu vào bộ nhớ đệm (Redis/Memcached) bắt buộc có định dạng: `tenant:{tenant_id}:{module}:{key}`.
+4. **Dependency Injection:**
+   * Không bao giờ dùng `new` trực tiếp trong Use Case; inject Port / Repository qua Constructor.
+5. **Transaction Management:**
+   * Mọi thay đổi đa thực thể phải được bọc trong Unit of Work / Database Transaction có gắn ngữ cảnh Tenant.

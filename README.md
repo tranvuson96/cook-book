@@ -51,7 +51,7 @@ cook-book/
 ├── install.ps1                        # Script cài đặt & liên kết tự động cho Windows (PowerShell)
 ├── rules/                             # Các quy tắc cốt lõi (Core Rules)
 │   ├── 01-module-creation-rules.md    # [Track 1] Quy tắc tạo module phần mềm (kèm Bước 0 làm rõ điểm xám)
-│   ├── 02-architecture-standards.md   # [Track 1] Tiêu chuẩn kiến trúc (Business Clarity First, SOLID)
+│   ├── 02-architecture-standards.md   # [Track 1] Tiêu chuẩn kiến trúc (Business Clarity First, SOLID, Hexagonal Multi-Protocol, Multi-Tenancy)
 │   ├── 03-git-and-workflow.md         # Quy chuẩn Git, commit, branching và terminal safety
 │   ├── 04-testing-quality-gates.md    # [Track 1] Tiêu chuẩn kiểm thử & coverage
 │   └── 05-wordpress-site-workflow-rules.md # [Track 2] Quy tắc vận hành dự án WordPress thực chiến
@@ -59,8 +59,9 @@ cook-book/
 ├── templates/                         # Mẫu tài liệu chuẩn (Markdown Artifacts)
 │   ├── 01-user-story-template.md      # [Track 1] Mẫu User Story (kèm bảng làm rõ điểm xám nghiệp vụ)
 │   ├── 02-system-design-template.md   # [Track 1] Mẫu Phân tích thiết kế (Class Diagram, SSD Mermaid)
-│   ├── 03-coding-guideline-template.md# [Track 1] Mẫu Coding Guideline cho module
+│   ├── 03-coding-guideline-template.md# [Track 1] Mẫu Coding Guideline cho module (Hexagonal + Multi-Tenant)
 │   ├── 04-test-plan-template.md       # [Track 1] Mẫu ma trận Unit & Integration test
+│   ├── 05-hexagonal-multi-protocol-and-tenant-guide.md # [Track 1] Cẩm nang Đa Giao thức (REST, SOAP, GraphQL, Socket, CLI) & Đa Khách thuê
 │   └── wordpress/                     # [Track 2] Thư mục Templates chuyên biệt cho WordPress
 │       ├── 01-client-brief-template.md           # Khảo sát yêu cầu, điểm xám & định vị Vibe
 │       ├── 02-plugin-theme-solution-template.md  # Đề xuất giải pháp Theme & Plugins
